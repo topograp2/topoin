@@ -1,0 +1,173 @@
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>숫자 야구</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+</head>
+<style>
+    @font-face {
+        font-family: 'seolleimcool-SemiBold';
+        src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2312-1@1.1/seolleimcool-SemiBold.woff2') format('woff2');
+        font-weight: normal;
+        font-style: normal;
+    }
+
+    @font-face {
+        font-family: 'SUITE-Regular';
+        src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-2@1.0/SUITE-Regular.woff2') format('woff2');
+        font-weight: 400;
+        font-style: normal;
+    }
+
+    #titleText,
+    #titleW {
+        font-size: 50px;
+        color: rgb(232, 226, 140);
+        font-family: 'seolleimcool-SemiBold';
+        background-color: rgb(15, 84, 22);
+        text-align: center;
+    }
+
+    #explain {
+        background-color: rgb(96, 128, 36);
+        font-family: 'SUITE-Regular';
+        color: antiquewhite;
+        width: 150px;
+        height: 30px;
+        margin: 10px;
+        border-radius: 50%;
+    }
+
+    #form, #explainW{
+        font-family: 'SUITE-Regular';
+        background-color: antiquewhite;
+    }
+    hr{
+        background-color: rgb(15, 84, 22);
+        padding:  0;
+        
+
+    }
+    hr.hr_dots{
+        border: 0;
+        border-top: 3px dotted #ffffff;
+    }
+    #logs{
+        font-family: 'SUITE-Regular';
+        background-color: darkolivegreen;
+        color:rgb(232, 226, 140)
+    
+    }
+    .Btn{
+        font-family: 'SUITE-Regular';
+        background-color: rgb(15, 84, 22);
+        color: #ffff;
+        border-radius: 40px;
+    
+    }
+    
+</style>
+
+<body>
+    <div id='titleW'><span id='titleText'>숫자 야구 게임</span></div>
+
+    <hr width=300px color=#613E3E noshade />
+    <div id = 'explainW'><button id="explain">규칙을 모르겠다면?</button> </div>
+    <form id="form">
+        <span id="box">*4자릿수:</span>
+        <input type="text" id="input">
+        <button class = "Btn">확인</button>
+    </form>
+    <hr class="hr_dots">
+    <div id="logs"></div>
+    <script src="https://code.jquery.com/jquery-latest.min.js"></script>
+   
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+</body>
+<script>
+    const $explain = document.querySelector('#explain');
+    const $input = document.querySelector('#input');
+    const $form = document.querySelector('#form');
+    const $logs = document.querySelector('#logs');
+  
+  
+
+
+    $().ready(function () {
+        $("#explain").click(function () {
+            
+            Swal.fire({
+                icon: 'info',                         // Alert 타입
+                title: '숫자야구란?',         // Alert 제목
+                text: '임의의 4자릿수가 존재하고, 사용자는 이를 알아맞혀야 합니다. 자리와 숫자가 일치했다면 strike, 자리는 틀렸지만 숫자가 일치하면 ball이 표시됩니다. 기회는 단 10번!',  // Alert 내용
+            });
+        });
+    });
+
+
+    const numbers = [];
+    for (let n = 0; n < 9; n++) {
+        numbers.push(n + 1);
+    }
+    const answer = [];
+    for (let n = 0; n < 4; n++) {
+        const index = Math.floor(Math.random() * (numbers.length)); // 0~8 정수
+        answer.push(numbers[index]);
+        numbers.splice(index, 1); // 원래에서 없애줌
+    }
+    console.log(answer);
+    const tries = [];
+
+    function checkInput(input) {
+        if (input.length !== 4)
+            return alert('4자리 숫자를 입력해 주세요');
+        if (new Set(input).size !== 4)
+            return alert('중복되지 않게 입력해 주세요');
+        if (tries.includes(input))
+            return alert('이미 시도한 값입니다.');
+        return true;
+
+    }
+
+    $form.addEventListener('submit', (event) => {
+        event.preventDefault();
+        const value = $input.value;
+        $input.value = '';
+        if (!checkInput(value)) {
+            return;
+        }
+        if (answer.join('') === value) {
+            $logs.textContent = '홈런! 새로고침해서 다시 시작하세요~';
+            return;
+        }
+
+        if (tries.length >= 9) {
+            const message = document.createTextNode(`패배! 정답은 ${answer.join('')}`);
+            $logs.appendChild(message);
+            return;
+        }
+
+        let strike = 0;
+        let ball = 0;
+        for (let i = 0; i < answer.length; i++) {
+            const index = value.indexOf(answer[i]);
+            if (index > -1) {
+                if (index === i) {
+                    strike += 1;
+                }
+                else {
+                    ball += 1;
+                }
+            }
+        }
+        $logs.append(`${tries.length+1}번째 시도 - ${value}: ${strike} 스크라이크 ${ball} 볼`, document.createElement('br'));
+        tries.push(value);
+
+    });
+
+
+</script>
+
+</html>
